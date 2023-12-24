@@ -3,10 +3,12 @@ package com.example.shoppinglist.presentation
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,10 +18,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) //temporarily
         setupRecyclerView()
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
+        }
+        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+        buttonAddItem.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -68,6 +76,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
             Log.d("MainActivity", it.toString())
+            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
